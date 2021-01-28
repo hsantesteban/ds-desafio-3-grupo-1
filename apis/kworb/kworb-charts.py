@@ -134,7 +134,7 @@ if __name__ == '__main__':
     k_charts = KworbChartsApi(output_path=['data', 'raw'])
 
     # download track's charts.
-    for track in tracks[10:]:
+    for track in tracks:
         k_charts.download_track_charts_history(track_id=track)
 
     # download global charts.

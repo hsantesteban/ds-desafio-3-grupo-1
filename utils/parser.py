@@ -66,7 +66,7 @@ class Parser:
         self._files_container.clear()
 
     def _read_files(self, path: str, allowed_extensions: tuple = ('.csv', '.txt', '.json', '.html'),
-                    list_only: bool = False, max_files: int = 99999):
+                    list_only: bool = False, max_files: int = 99999, qualifier: str = '*'):
 
         # iterate files in directory.
         for file in listdir(path):
@@ -81,6 +81,13 @@ class Parser:
             if file_extension not in allowed_extensions:
                 # skip file.
                 continue
+
+            # check qualifier.
+            if qualifier not in ('', '*', None):
+                # filter file by qualifier.
+                if qualifier not in file:
+                    # skip file
+                    continue
 
             # open file.
             with open(join(path, file)) as f:
