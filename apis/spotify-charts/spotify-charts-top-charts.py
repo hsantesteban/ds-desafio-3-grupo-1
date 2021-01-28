@@ -9,7 +9,7 @@ from time import sleep
 from utils.api import Api
 
 
-class WeeklyChartsDownloader(Api):
+class SpotifyChartsDownloader(Api):
 
     # available regions.
     regions = [
@@ -24,7 +24,7 @@ class WeeklyChartsDownloader(Api):
         super().__init__()
 
         # base path.
-        self._base_path = os.path.split(os.path.split(os.path.realpath(__file__))[0])[0]
+        self._base_path = os.path.split(os.path.split(os.path.split(os.path.realpath(__file__))[0])[0])[0]
 
         # initialise logger.
         self._init_logger(logger_name='SPOT-WKLY', file_name=f'RUN {dt.now()}', system_logger=system_logger)
@@ -48,12 +48,12 @@ class WeeklyChartsDownloader(Api):
             raise ValueError(f'the region value specified {region} is not allowed')
 
         # logger.
-        self.logger.info(f'initialising data request for {len(weeks)}')
+        self.logger.info(f'initialising data request for region {region} using {len(weeks)} weeks')
 
         # iterate and download weeks.
         for index, week in enumerate(weeks):
             # logger.
-            self.logger.info(f'iterating week {week} - {index} of {len(weeks)}')
+            self.logger.info(f'iterating week {week} - {index+1} of {len(weeks)}')
             # perform data download.
             self._download_weekly_charts(week=week, region=region)
             # avoid flooding.
@@ -89,14 +89,15 @@ class WeeklyChartsDownloader(Api):
 
         # save data to filesystem.
         super()._save_text_to_file(
-            output_path=[self._base_path, 'data', 'raw', 'weekly-charts', week],
+            output_path=[self._base_path, 'data', 'raw', 'spotify-charts-weekly-top-charts', f'{region}_{week}'],
             data=r.text,
             extension='csv'
         )
 
 
 if __name__ == '__main__':
-    # weeks to download
+
+    # available weeks to download
     weeks = [
         "2021-01-15--2021-01-22",
         "2021-01-01--2021-01-08",
@@ -205,6 +206,9 @@ if __name__ == '__main__':
         "2017-01-06--2017-01-13",
         "2016-12-23--2016-12-30"
     ]
-    # perform download.
-    wd = WeeklyChartsDownloader(system_logger=False)
-    wd.download_weekly_charts(weeks=weeks[0:2])
+
+    # create a new downloader object.
+    wd = SpotifyChartsDownloader(system_logger=False)
+
+    # download weekly top charts.
+    wd.download_weekly_charts(weeks=weeks, region='global')
